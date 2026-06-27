@@ -5,9 +5,6 @@ from typing import Optional
 import sqlite3
 import os
 from dotenv import load_dotenv
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
 load_dotenv()
@@ -18,28 +15,16 @@ app = FastAPI(
     description="API for Trust Layer Global website"
 )
 
-# Configure CORS - This is the important part
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",   # Next.js dev server
-        "http://localhost:3001",   # If you use a different port
-        "http://127.0.0.1:3000",   # Localhost with IP
-        "*",                        # For development only - allows all
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Include OPTIONS
-    allow_headers=[
-        "Content-Type",
-        "Accept",
-        "Authorization",
-        "X-Requested-With",
-    ],
-    expose_headers=["Content-Length", "Content-Type"],
-    max_age=3600,  # Cache preflight for 1 hour
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Database setup - SQLite
+# Database setup
 DB_PATH = os.path.join(os.path.dirname(__file__), "trustlayer.db")
 
 def get_db():
@@ -51,7 +36,6 @@ def init_db():
     conn = get_db()
     cursor = conn.cursor()
     
-    # Create contacts table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS contacts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,7 +47,6 @@ def init_db():
         )
     """)
     
-    # Create newsletter subscribers table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS newsletter_subscribers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,7 +59,7 @@ def init_db():
     conn.close()
     print("✅ SQLite database initialized")
 
-# Initialize database on startup
+# Initialize on startup
 @app.on_event("startup")
 async def startup():
     init_db()
@@ -91,30 +74,13 @@ class ContactRequest(BaseModel):
 class NewsletterSubscription(BaseModel):
     email: EmailStr
 
-class ContactResponse(BaseModel):
-    status: str
-    message: str
-
-# Email configuration
-SMTP_HOST = os.getenv("SMTP_HOST")
-SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-SMTP_USER = os.getenv("SMTP_USER")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-SMTP_FROM = os.getenv("SMTP_FROM")
-
 # API Routes
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy", "message": "Trust Layer API is running"}
 
-@app.options("/api/contact")
-async def options_contact():
-    """Handle OPTIONS preflight request"""
-    return {"message": "OK"}
-
-@app.post("/api/contact", response_model=ContactResponse)
+@app.post("/api/contact")
 async def submit_contact(contact: ContactRequest):
-    """Submit a contact form message"""
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -125,28 +91,18 @@ async def submit_contact(contact: ContactRequest):
         )
         conn.commit()
         conn.close()
-
-        # Send email notification
-        await send_contact_email(contact)
-
+        
         return {"status": "success", "message": "Message sent successfully"}
     except Exception as e:
-        print(f"Error submitting contact: {e}")
+        print(f"Error: {e}")
         raise HTTPException(status_code=500, detail="Failed to submit message")
-
-@app.options("/api/newsletter")
-async def options_newsletter():
-    """Handle OPTIONS preflight request"""
-    return {"message": "OK"}
 
 @app.post("/api/newsletter")
 async def subscribe_newsletter(subscription: NewsletterSubscription):
-    """Subscribe to newsletter"""
     try:
         conn = get_db()
         cursor = conn.cursor()
         
-        # Check if already subscribed
         cursor.execute("SELECT id FROM newsletter_subscribers WHERE email = ?", (subscription.email,))
         existing = cursor.fetchone()
         
@@ -160,52 +116,11 @@ async def subscribe_newsletter(subscription: NewsletterSubscription):
         )
         conn.commit()
         conn.close()
-
+        
         return {"status": "success", "message": "Subscribed successfully"}
     except Exception as e:
-        print(f"Error subscribing: {e}")
+        print(f"Error: {e}")
         raise HTTPException(status_code=500, detail="Failed to subscribe")
-
-# Helper function for sending emails
-async def send_contact_email(contact: ContactRequest):
-    """Send email notification for new contact"""
-    if not all([SMTP_HOST, SMTP_USER, SMTP_PASSWORD, SMTP_FROM]):
-        print("⚠️ SMTP not configured, skipping email")
-        return
-
-    try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"New Contact: {contact.name} - Trust Layer"
-        msg["From"] = SMTP_FROM
-        msg["To"] = SMTP_FROM
-
-        html = f"""
-        <html>
-        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #0D1226;">New Contact Form Submission</h2>
-            <div style="background: #f5f5f5; padding: 20px; border-radius: 10px;">
-                <p><strong>Name:</strong> {contact.name}</p>
-                <p><strong>Email:</strong> {contact.email}</p>
-                <p><strong>Company:</strong> {contact.company or 'N/A'}</p>
-                <hr>
-                <p><strong>Message:</strong></p>
-                <p style="background: white; padding: 15px; border-radius: 5px;">{contact.message}</p>
-            </div>
-            <p style="color: #666; font-size: 12px; margin-top: 20px;">
-                Sent from Trust Layer Global website
-            </p>
-        </body>
-        </html>
-        """
-        msg.attach(MIMEText(html, "html"))
-
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASSWORD)
-            server.sendmail(SMTP_FROM, SMTP_FROM, msg.as_string())
-        print(f"📧 Email sent for contact from {contact.email}")
-    except Exception as e:
-        print(f"❌ Failed to send email: {e}")
 
 @app.get("/")
 async def root():
