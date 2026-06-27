@@ -13,3 +13,4 @@ venv/
 README.md
 Dockerfile
 .dockerignore
+!main_sqlite.py
