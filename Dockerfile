@@ -7,15 +7,17 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements from the api folder (since Dockerfile is in root)
-COPY api/requirements.txt .
+# Copy requirements first (for better caching)
+COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire api folder contents
-COPY api/ .
+# Copy the rest of the application
+COPY . .
 
+# Expose the port
 EXPOSE 8000
 
+# Start the application
 CMD ["uvicorn", "main_sqlite:app", "--host", "0.0.0.0", "--port", "8000"]
