@@ -239,7 +239,7 @@ def send_welcome_email(email: str):
                                     <tr>
                                         <td style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
                                             <p style="color: #6b7280; font-size: 12px; margin: 0; line-height: 1.6;">
-                                                © 2025 Trust Layer Technologies. All rights reserved.
+                                                © 2026 Trust Layer Technologies. All rights reserved.
                                             </p>
                                             <p style="color: #6b7280; font-size: 12px; margin: 4px 0 0 0;">
                                                 Building trusted digital solutions for a connected world.
