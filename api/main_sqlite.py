@@ -83,8 +83,8 @@ def send_contact_email(contact: ContactRequest):
     """Send email notification for new contact using Resend"""
     try:
         params = {
-            "from": "Trust Layer <onboarding@resend.dev>",  # Use Resend's test domain
-            "to": ["msadiqblog@gmail.com"],  # Replace with your email
+            "from": "Trust Layer <contact@trustlayers.com.ng>",  # Updated to your domain
+            "to": ["msadiqblog@gmail.com"],
             "subject": f"New Contact: {contact.name} - Trust Layer",
             "html": f"""
                 <html>
@@ -117,7 +117,7 @@ def send_welcome_email(email: str):
     """Send welcome email to new subscriber using Resend"""
     try:
         params = {
-            "from": "Trust Layer <onboarding@resend.dev>",
+            "from": "Trust Layer <contact@trustlayers.com.ng>",  # Updated to your domain
             "to": [email],
             "subject": "Welcome to Trust Layer! 🎉",
             "html": f"""
