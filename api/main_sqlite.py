@@ -103,7 +103,11 @@ def send_contact_email(contact: ContactRequest):
                     </p>
                 </body>
                 </html>
-            """
+            """,
+            "tags": [
+                {"name": "email_type", "value": "contact_notification"},
+                {"name": "source", "value": "website_contact_form"}
+            ]
         }
         
         email = resend.Emails.send(params)
@@ -116,6 +120,8 @@ def send_contact_email(contact: ContactRequest):
 def send_welcome_email(email: str):
     """Send welcome email to new subscriber using Resend"""
     try:
+        unsubscribe_url = f"https://trustlayers.com.ng/unsubscribe?email={email}"
+        
         params = {
             "from": "Trust Layer <contact@trustlayers.com.ng>",
             "to": [email],
@@ -235,11 +241,11 @@ def send_welcome_email(email: str):
                                         </td>
                                     </tr>
                                     
-                                    <!-- Footer -->
+                                    <!-- Footer with Unsubscribe -->
                                     <tr>
                                         <td style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
                                             <p style="color: #6b7280; font-size: 12px; margin: 0; line-height: 1.6;">
-                                                © 2026 Trust Layer Technologies. All rights reserved.
+                                                © 2025 Trust Layer Technologies. All rights reserved.
                                             </p>
                                             <p style="color: #6b7280; font-size: 12px; margin: 4px 0 0 0;">
                                                 Building trusted digital solutions for a connected world.
@@ -247,7 +253,7 @@ def send_welcome_email(email: str):
                                             <p style="color: #9ca3af; font-size: 11px; margin-top: 8px;">
                                                 You're receiving this because you subscribed to our newsletter.
                                                 <br>
-                                                <a href="#" style="color: #2563EB; text-decoration: underline;">Unsubscribe</a>
+                                                <a href="{unsubscribe_url}" style="color: #2563EB; text-decoration: underline;">Unsubscribe</a>
                                             </p>
                                         </td>
                                     </tr>
@@ -258,7 +264,11 @@ def send_welcome_email(email: str):
                     </table>
                 </body>
                 </html>
-            """
+            """,
+            "tags": [
+                {"name": "email_type", "value": "welcome"},
+                {"name": "source", "value": "newsletter_signup"}
+            ]
         }
         
         email = resend.Emails.send(params)
@@ -267,6 +277,27 @@ def send_welcome_email(email: str):
     except Exception as e:
         print(f"❌ Failed to send welcome email: {e}")
         return None
+
+def unsubscribe_email(email: str):
+    """Remove subscriber from newsletter list"""
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        cursor.execute("DELETE FROM newsletter_subscribers WHERE email = ?", (email,))
+        affected_rows = cursor.rowcount
+        conn.commit()
+        conn.close()
+        
+        if affected_rows > 0:
+            print(f"✅ Unsubscribed: {email}")
+            return True
+        else:
+            print(f"❌ Email not found: {email}")
+            return False
+    except Exception as e:
+        print(f"❌ Unsubscribe error: {e}")
+        return False
 
 # API Routes
 @app.get("/api/health")
@@ -322,6 +353,46 @@ async def subscribe_newsletter(subscription: NewsletterSubscription):
         print(f"Error: {e}")
         raise HTTPException(status_code=500, detail="Failed to subscribe")
 
+@app.post("/api/unsubscribe")
+async def unsubscribe(subscription: NewsletterSubscription):
+    """Unsubscribe from newsletter"""
+    try:
+        success = unsubscribe_email(subscription.email)
+        
+        if success:
+            return {"status": "success", "message": "Unsubscribed successfully"}
+        else:
+            return {"status": "not_found", "message": "Email not found in our list"}
+    except Exception as e:
+        print(f"Error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to unsubscribe")
+
+@app.get("/api/analytics")
+async def get_analytics():
+    """Get email analytics"""
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Count subscribers
+        cursor.execute("SELECT COUNT(*) FROM newsletter_subscribers")
+        subscribers = cursor.fetchone()[0]
+        
+        # Count contacts
+        cursor.execute("SELECT COUNT(*) FROM contacts")
+        contacts = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        return {
+            "totalSubscribers": subscribers,
+            "contacts": contacts,
+            "emailsSent": 0  # You can track this from Resend logs
+        }
+    except Exception as e:
+        print(f"Error: {e}")
+        return {"error": "Failed to fetch analytics"}
+
 @app.get("/")
 async def root():
     return {
@@ -330,7 +401,9 @@ async def root():
         "endpoints": {
             "health": "/api/health",
             "contact": "/api/contact",
-            "newsletter": "/api/newsletter"
+            "newsletter": "/api/newsletter",
+            "unsubscribe": "/api/unsubscribe",
+            "analytics": "/api/analytics"
         }
     }
 
