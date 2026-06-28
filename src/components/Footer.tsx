@@ -45,7 +45,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">Products</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/products" className="hover:text-white transition-colors">DataFlow</Link></li>
+              <li><Link href="/products" className="hover:text-white transition-colors">Trust Data</Link></li>
               <li><Link href="/products" className="hover:text-white transition-colors">Trust Pay</Link></li>
             </ul>
           </div>

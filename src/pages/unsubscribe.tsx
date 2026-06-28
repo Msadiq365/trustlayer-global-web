@@ -17,7 +17,8 @@ export default function Unsubscribe() {
   const handleUnsubscribe = async (email: string) => {
     setStatus('loading')
     try {
-      const response = await fetch('/api/unsubscribe', {
+      // ✅ FIX: Use the full backend API URL
+      const response = await fetch('https://trustlayers.com.ng/api/unsubscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
