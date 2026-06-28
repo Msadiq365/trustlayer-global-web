@@ -83,7 +83,7 @@ def send_contact_email(contact: ContactRequest):
     """Send email notification for new contact using Resend"""
     try:
         params = {
-            "from": "Trust Layer <contact@trustlayers.com.ng>",  # Updated to your domain
+            "from": "Trust Layer <contact@trustlayers.com.ng>",
             "to": ["msadiqblog@gmail.com"],
             "subject": f"New Contact: {contact.name} - Trust Layer",
             "html": f"""
@@ -117,21 +117,145 @@ def send_welcome_email(email: str):
     """Send welcome email to new subscriber using Resend"""
     try:
         params = {
-            "from": "Trust Layer <contact@trustlayers.com.ng>",  # Updated to your domain
+            "from": "Trust Layer <contact@trustlayers.com.ng>",
             "to": [email],
             "subject": "Welcome to Trust Layer! 🎉",
             "html": f"""
+                <!DOCTYPE html>
                 <html>
-                <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #0D1226;">Welcome to Trust Layer! 🎉</h2>
-                    <p>Thank you for subscribing to our newsletter.</p>
-                    <p>You'll receive updates about our products, insights, and company news.</p>
-                    <div style="background: #f5f5f5; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                        <p style="margin: 0;">Building trusted digital solutions for a connected world.</p>
-                    </div>
-                    <p style="color: #666; font-size: 12px;">
-                        Trust Layer Technologies
-                    </p>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Welcome to Trust Layer</title>
+                </head>
+                <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f9fafb;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f9fafb; padding: 40px 0;">
+                        <tr>
+                            <td align="center">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                                    
+                                    <!-- Header -->
+                                    <tr>
+                                        <td style="background: linear-gradient(135deg, #0D1226 0%, #1a1f3a 100%); padding: 40px 30px; text-align: center;">
+                                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px;">
+                                                TRUST <span style="color: #60A5FA;">LAYER</span>
+                                            </h1>
+                                            <p style="color: #93b4e8; margin: 8px 0 0 0; font-size: 16px; opacity: 0.9;">
+                                                Building trusted digital solutions
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Main Content -->
+                                    <tr>
+                                        <td style="padding: 40px 30px;">
+                                            <h2 style="color: #0D1226; font-size: 24px; margin-top: 0; margin-bottom: 8px;">
+                                                Welcome to Trust Layer! 👋
+                                            </h2>
+                                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-top: 0;">
+                                                Thank you for subscribing to our newsletter. We're excited to have you on board!
+                                            </p>
+                                            
+                                            <div style="background-color: #f3f4f6; padding: 20px; border-radius: 12px; margin: 24px 0; border-left: 4px solid #2563EB;">
+                                                <p style="color: #0D1226; font-size: 15px; line-height: 1.6; margin: 0;">
+                                                    <strong>What to expect:</strong>
+                                                </p>
+                                                <ul style="color: #4b5563; font-size: 14px; line-height: 1.8; padding-left: 20px; margin: 8px 0 0 0;">
+                                                    <li>📊 Product updates and new features</li>
+                                                    <li>🔒 Security and reliability insights</li>
+                                                    <li>💡 Industry trends and innovations</li>
+                                                    <li>🎉 Company news and announcements</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <!-- Quick Links -->
+                                            <div style="margin: 32px 0;">
+                                                <p style="color: #0D1226; font-size: 15px; font-weight: 600; margin-bottom: 12px;">
+                                                    🌐 Explore our digital ecosystem:
+                                                </p>
+                                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                    <tr>
+                                                        <td style="padding: 0 4px 8px 0;">
+                                                            <a href="https://trustlayers.com.ng/about" style="display: block; background-color: #f3f4f6; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #0D1226; font-size: 14px; font-weight: 500; text-align: center; transition: background-color 0.2s;">
+                                                                📖 About Us
+                                                            </a>
+                                                        </td>
+                                                        <td style="padding: 0 0 8px 4px;">
+                                                            <a href="https://trustlayers.com.ng/products" style="display: block; background-color: #f3f4f6; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #0D1226; font-size: 14px; font-weight: 500; text-align: center; transition: background-color 0.2s;">
+                                                                🚀 Products
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px 4px 0 0;">
+                                                            <a href="https://trustlayers.com.ng/technology" style="display: block; background-color: #f3f4f6; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #0D1226; font-size: 14px; font-weight: 500; text-align: center; transition: background-color 0.2s;">
+                                                                ⚙️ Technology
+                                                            </a>
+                                                        </td>
+                                                        <td style="padding: 4px 0 0 4px;">
+                                                            <a href="https://trustlayers.com.ng/contact" style="display: block; background-color: #f3f4f6; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #0D1226; font-size: 14px; font-weight: 500; text-align: center; transition: background-color 0.2s;">
+                                                                📬 Contact Us
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            
+                                            <!-- Our Solutions -->
+                                            <div style="margin: 32px 0; padding: 20px; background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border-radius: 12px;">
+                                                <p style="color: #0D1226; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
+                                                    💡 Our Solutions:
+                                                </p>
+                                                <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 0;">
+                                                    <strong>DataFlow</strong> — Digital Utility Platform for VTU services<br>
+                                                    <strong>Trust Pay</strong> — Secure Digital Payment Solution
+                                                </p>
+                                                <p style="margin: 12px 0 0 0;">
+                                                    <a href="https://trustlayers.com.ng/products" style="color: #2563EB; text-decoration: none; font-weight: 500; font-size: 14px;">
+                                                        Learn more →
+                                                    </a>
+                                                </p>
+                                            </div>
+                                            
+                                            <!-- Social Links -->
+                                            <div style="margin: 32px 0; text-align: center;">
+                                                <p style="color: #6b7280; font-size: 13px; margin-bottom: 12px;">
+                                                    Connect with us:
+                                                </p>
+                                                <div style="display: inline-block; margin: 0 8px;">
+                                                    <a href="#" style="color: #0D1226; text-decoration: none; font-size: 14px;">LinkedIn</a>
+                                                </div>
+                                                <div style="display: inline-block; margin: 0 8px;">
+                                                    <a href="#" style="color: #0D1226; text-decoration: none; font-size: 14px;">Twitter</a>
+                                                </div>
+                                                <div style="display: inline-block; margin: 0 8px;">
+                                                    <a href="#" style="color: #0D1226; text-decoration: none; font-size: 14px;">GitHub</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Footer -->
+                                    <tr>
+                                        <td style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                                            <p style="color: #6b7280; font-size: 12px; margin: 0; line-height: 1.6;">
+                                                © 2025 Trust Layer Technologies. All rights reserved.
+                                            </p>
+                                            <p style="color: #6b7280; font-size: 12px; margin: 4px 0 0 0;">
+                                                Building trusted digital solutions for a connected world.
+                                            </p>
+                                            <p style="color: #9ca3af; font-size: 11px; margin-top: 8px;">
+                                                You're receiving this because you subscribed to our newsletter.
+                                                <br>
+                                                <a href="#" style="color: #2563EB; text-decoration: underline;">Unsubscribe</a>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
                 </body>
                 </html>
             """
