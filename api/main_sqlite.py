@@ -4,10 +4,14 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 import sqlite3
 import os
+import resend
 from dotenv import load_dotenv
 from datetime import datetime
 
 load_dotenv()
+
+# Initialize Resend
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 app = FastAPI(
     title="Trust Layer API",
@@ -74,6 +78,72 @@ class ContactRequest(BaseModel):
 class NewsletterSubscription(BaseModel):
     email: EmailStr
 
+# Email Functions
+def send_contact_email(contact: ContactRequest):
+    """Send email notification for new contact using Resend"""
+    try:
+        params = {
+            "from": "Trust Layer <onboarding@resend.dev>",  # Use Resend's test domain
+            "to": ["msadiq.mec@futb.edu.ng"],  # Replace with your email
+            "subject": f"New Contact: {contact.name} - Trust Layer",
+            "html": f"""
+                <html>
+                <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #0D1226;">New Contact Form Submission</h2>
+                    <div style="background: #f5f5f5; padding: 20px; border-radius: 10px;">
+                        <p><strong>Name:</strong> {contact.name}</p>
+                        <p><strong>Email:</strong> {contact.email}</p>
+                        <p><strong>Company:</strong> {contact.company or 'N/A'}</p>
+                        <hr>
+                        <p><strong>Message:</strong></p>
+                        <p style="background: white; padding: 15px; border-radius: 5px;">{contact.message}</p>
+                    </div>
+                    <p style="color: #666; font-size: 12px; margin-top: 20px;">
+                        Sent from Trust Layer Global website
+                    </p>
+                </body>
+                </html>
+            """
+        }
+        
+        email = resend.Emails.send(params)
+        print(f"📧 Email sent to {email} for contact from {contact.email}")
+        return email
+    except Exception as e:
+        print(f"❌ Failed to send email: {e}")
+        return None
+
+def send_welcome_email(email: str):
+    """Send welcome email to new subscriber using Resend"""
+    try:
+        params = {
+            "from": "Trust Layer <onboarding@resend.dev>",
+            "to": [email],
+            "subject": "Welcome to Trust Layer! 🎉",
+            "html": f"""
+                <html>
+                <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #0D1226;">Welcome to Trust Layer! 🎉</h2>
+                    <p>Thank you for subscribing to our newsletter.</p>
+                    <p>You'll receive updates about our products, insights, and company news.</p>
+                    <div style="background: #f5f5f5; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <p style="margin: 0;">Building trusted digital solutions for a connected world.</p>
+                    </div>
+                    <p style="color: #666; font-size: 12px;">
+                        Trust Layer Technologies
+                    </p>
+                </body>
+                </html>
+            """
+        }
+        
+        email = resend.Emails.send(params)
+        print(f"📧 Welcome email sent to {email}")
+        return email
+    except Exception as e:
+        print(f"❌ Failed to send welcome email: {e}")
+        return None
+
 # API Routes
 @app.get("/api/health")
 async def health_check():
@@ -91,6 +161,9 @@ async def submit_contact(contact: ContactRequest):
         )
         conn.commit()
         conn.close()
+        
+        # Send email notification
+        send_contact_email(contact)
         
         return {"status": "success", "message": "Message sent successfully"}
     except Exception as e:
@@ -116,6 +189,9 @@ async def subscribe_newsletter(subscription: NewsletterSubscription):
         )
         conn.commit()
         conn.close()
+        
+        # Send welcome email
+        send_welcome_email(subscription.email)
         
         return {"status": "success", "message": "Subscribed successfully"}
     except Exception as e:

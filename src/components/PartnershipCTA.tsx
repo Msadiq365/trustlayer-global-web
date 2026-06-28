@@ -67,7 +67,7 @@ export default function PartnershipCTA() {
               </h3>
               <div className="space-y-3">
                 {[
-                  { icon: '📧', label: 'Email', value: 'hello@trustlayerglobal.com' },
+                  { icon: '📧', label: 'Email', value: 'info@trustlayerglobal.com' },
                   { icon: '📍', label: 'Location', value: 'Lagos, Nigeria' },
                   { icon: '🕐', label: 'Hours', value: 'Mon-Fri, 9:00 AM - 6:00 PM' },
                 ].map((item) => (
