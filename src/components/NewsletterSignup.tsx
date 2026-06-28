@@ -11,7 +11,6 @@ export default function NewsletterSignup() {
     setStatus('loading')
     setMessage('')
 
-    // Make sure email is valid before sending
     if (!email || !email.includes('@')) {
       setStatus('error')
       setMessage('❌ Please enter a valid email address')
@@ -19,10 +18,7 @@ export default function NewsletterSignup() {
       return
     }
 
-    console.log('📧 Subscribing email:', email) // Debug log
-    
     const result = await subscribeNewsletter(email)
-    console.log('📥 Result:', result) // Debug log
     
     if (result.success) {
       setStatus('success')
@@ -38,27 +34,27 @@ export default function NewsletterSignup() {
   }
 
   return (
-    <div className="mt-6">
-      <h4 className="text-white font-semibold mb-3">Subscribe to our newsletter</h4>
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+    <div className="mt-6 w-full max-w-xs">
+      <h4 className="text-white font-semibold mb-3 text-sm">Subscribe to our newsletter</h4>
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
           required
-          className="flex-1 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-primary-light"
+          className="flex-1 px-3 py-2 text-sm rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-primary-light min-w-0"
         />
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          className="px-4 py-2 text-sm bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
         >
           {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
         </button>
       </form>
       {message && (
-        <p className={`mt-2 text-sm ${status === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+        <p className={`mt-2 text-xs ${status === 'success' ? 'text-green-400' : 'text-red-400'}`}>
           {message}
         </p>
       )}
