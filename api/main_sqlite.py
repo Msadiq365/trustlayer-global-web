@@ -84,7 +84,7 @@ def send_contact_email(contact: ContactRequest):
     try:
         params = {
             "from": "Trust Layer <onboarding@resend.dev>",  # Use Resend's test domain
-            "to": ["msadiq.mec@futb.edu.ng"],  # Replace with your email
+            "to": ["msadiqblog@gmail.com"],  # Replace with your email
             "subject": f"New Contact: {contact.name} - Trust Layer",
             "html": f"""
                 <html>
